@@ -1,4 +1,4 @@
-import { parse, splitIntoColumns, splitIntoLaps } from './pdfparser';
+import { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems } from './pdfparser';
 
 test('parser', async () => {
     const items = await parse('./sample_data/2022-02-12-Yas Marina/Porsche Sprint Challenge Middle East - Race 1 - Laps and Sectortimes.pdf');
@@ -60,6 +60,20 @@ test('parser', async () => {
         laptime: '2:00.140'
     });
 
+    const col2Laps = splitIntoLaps(columns[1]);
+    expect(col2Laps.length).toBe(6);
+
+    expect(col2Laps[0]).toEqual({
+        lapNumber: 7,
+        s1: 24.969,
+        s1Speed: 221.3,
+        s2: 47.990,
+        s2Speed: 224.1,
+        s3: 43.738,
+        s3Speed: 164.6,
+        speedTrap: 231.8,
+        laptime: '1:56.697'
+    });
   });
 
 test('splits into columns with lap 1 sector 1 time present', () => {
@@ -113,4 +127,49 @@ test('splits into laps', () => {
         laptime: '8'
     });
 });
+
+test('make lap from 9 items', () => {
+    const lapItems = [...Array(9).keys()].map(i => ({
+        x: i,
+        y: 10,
+        text: String(i),
+    }));
+
+    const lap = makeLapFromItems(lapItems);
+
+    expect(lap).toEqual({
+        lapNumber: 0,
+        s1: 1,
+        s1Speed: 2,
+        s2: 3,
+        s2Speed: 4,
+        s3: 5,
+        s3Speed: 6,
+        speedTrap: 7,
+        laptime: '8',
+    });
+});
+
+test('make lap from 8 items', () => {
+    const lapItems = [...Array(8).keys()].map(i => ({
+        x: i,
+        y: 10,
+        text: String(i),
+    }));
+
+    const lap = makeLapFromItems(lapItems);
+
+    expect(lap).toEqual({
+        lapNumber: 0,
+        s1: undefined,
+        s1Speed: 1,
+        s2: 2,
+        s2Speed: 3,
+        s3: 4,
+        s3Speed: 5,
+        speedTrap: 6,
+        laptime: '7',
+    });
+});
+
 
