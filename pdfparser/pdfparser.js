@@ -19,9 +19,13 @@ function splitIntoColumns(driverItems) {
 
 function splitIntoLaps(driverItems) {
     const uniqueYValues = [...new Set(driverItems.map(item => item.y))];
-    uniqueYValues.sort();
+    uniqueYValues.sort((a,b) => a-b);
     const uniqueXValues = [...new Set(driverItems.map(item => item.x))];
-    uniqueXValues.sort();
+    uniqueXValues.sort((a,b) => a-b);
+    if (uniqueXValues.length != 9) {
+        throw new Error(`Got ${uniqueXValues.length} unique x values: ${JSON.stringify(uniqueXValues)}`);
+    }
+    console.log(`UniqueXValues are ${uniqueXValues}`);
     const yValueMap = {};
     uniqueYValues.forEach((value, index) => {
         yValueMap[value] = index;
@@ -39,7 +43,12 @@ function splitIntoLaps(driverItems) {
 
     const lapItems = [...Array(uniqueYValues.length).keys()].map(i => ({}));
     driverItems.forEach(item => {
-        lapItems[yValueMap[item.y]][xValueMap[item.x]] = item.text;
+        const field = xValueMap[item.x];
+        if (field === 'laptime') {
+            lapItems[yValueMap[item.y]][field] = item.text;
+        } else {
+            lapItems[yValueMap[item.y]][field] = Number(item.text);
+        } 
     });
     return lapItems;
 }

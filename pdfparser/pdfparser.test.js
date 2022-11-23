@@ -47,6 +47,19 @@ test('parser', async () => {
 
     const col1Laps = splitIntoLaps(columns[0]);
     expect(col1Laps.length).toBe(6);
+
+    expect(col1Laps[0]).toEqual({
+        lapNumber: 1,
+        s1: undefined,
+        s1Speed: 217.7,
+        s2: 47.866,
+        s2Speed: 220,
+        s3: 43.868,
+        s3Speed: 165.1,
+        speedTrap: 238.9,
+        laptime: '2:00.140'
+    });
+
   });
 
 test('splits into columns with lap 1 sector 1 time present', () => {
@@ -89,14 +102,14 @@ test('splits into laps', () => {
     expect(laps.length).toBe(3);
 
     expect(laps[0]).toEqual({
-        lapNumber: '0',
-        s1: '1',
-        s1Speed: '2',
-        s2: '3',
-        s2Speed: '4',
-        s3: '5',
-        s3Speed: '6',
-        speedTrap: '7',
+        lapNumber: 0,
+        s1: 1,
+        s1Speed: 2,
+        s2: 3,
+        s2Speed: 4,
+        s3: 5,
+        s3Speed: 6,
+        speedTrap: 7,
         laptime: '8'
     });
 });
