@@ -13,6 +13,20 @@ function parse(filename) {
     });
 }
 
+function convertDriverItemsIntoLaps(driverItems) {
+    const columns = splitIntoColumns(driverItems);
+    if (columns.length != 2) {
+        throw new Error(`Expected 2 columns of laps but got ${columns.length}`);
+    }
+    const col1Laps = splitIntoLaps(columns[0]);
+    const col2Laps = splitIntoLaps(columns[1]);
+    if (col1Laps.length !== col2Laps.length) {
+        throw new Error(`Columns have different number of laps ${col1Laps.length} and ${col2Laps.length}`);
+    }
+
+    return col1Laps.concat(col2Laps);
+}
+
 function splitIntoColumns(driverItems) {
     return [driverItems.slice(0, driverItems.length / 2), driverItems.slice(driverItems.length / 2)];
 }
@@ -62,4 +76,4 @@ function makeLapFromItems(lapItems) {
     throw new Error(`Cannot make lap from ${lapItems.length} items`);
 }
 
-export { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems };
+export { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps };

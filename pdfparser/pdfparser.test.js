@@ -1,6 +1,6 @@
-import { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems } from './pdfparser';
+import { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps } from './pdfparser';
 
-test('parser', async () => {
+test('integration test', async () => {
     const items = await parse('./sample_data/2022-02-12-Yas Marina/Porsche Sprint Challenge Middle East - Race 1 - Laps and Sectortimes.pdf');
     console.log(`read ${items.length} items`);
     for (let index = 0; index < 40; index++) {
@@ -42,13 +42,10 @@ test('parser', async () => {
     expect(raceTitle2).toBe('Porsche Sprint Challenge Middle East');
     expect(location).toBe('Yas Marina Circuit - 5281mtr.');
 
-    const columns = splitIntoColumns(driverItems);
-    expect(columns.length).toBe(2);
+    const laps = convertDriverItemsIntoLaps(driverItems);
+    expect(laps.length).toBe(12);
 
-    const col1Laps = splitIntoLaps(columns[0]);
-    expect(col1Laps.length).toBe(6);
-
-    expect(col1Laps[0]).toEqual({
+    expect(laps[0]).toEqual({
         lapNumber: 1,
         s1: undefined,
         s1Speed: 217.7,
@@ -60,10 +57,7 @@ test('parser', async () => {
         laptime: '2:00.140'
     });
 
-    const col2Laps = splitIntoLaps(columns[1]);
-    expect(col2Laps.length).toBe(6);
-
-    expect(col2Laps[0]).toEqual({
+    expect(laps[6]).toEqual({
         lapNumber: 7,
         s1: 24.969,
         s1Speed: 221.3,
