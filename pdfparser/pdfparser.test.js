@@ -36,27 +36,17 @@ test('parser', async () => {
     while(items[index].R[0].S != -1) {
         driverItems.push(items[index++]);
     }
-    /*
-    let missingL1S1 = true;
-    let lapOneOffset = missingL1S1 ? 1 : 0;
-    let numberOfLaps = (lapOneOffset + driverItems.length) / 9;
-    let firstColumnItems = driverItems.slice(0, ((driverItems.length + lapOneOffset) / 2) - lapOneOffset);
-    for (let lapIndex = 0; lapIndex < numberOfLaps; lapIndex++) {
-        let lapNumber;
-        if (lapIndex == 0) {
-            lapNumber = Number(driverItems[0].text);
-        } else {
-            lapNumber = Number(driverItems[(9 * lapIndex) - lapOneOffset].text);
-        }
-        expect(lapNumber).toBe(lapIndex+1);
-        console.log(`Found lap ${lapNumber}`);
-    }
-    console.log(`Found ${driverItems.length} items in ${numberOfLaps} laps`);
-*/
+
     expect(raceTitle).toBe('Porsche Sprint Challenge Middle East');
     expect(raceDate).toBe('12 - 13 February 2022')
     expect(raceTitle2).toBe('Porsche Sprint Challenge Middle East');
     expect(location).toBe('Yas Marina Circuit - 5281mtr.');
+
+    const columns = splitIntoColumns(driverItems);
+    expect(columns.length).toBe(2);
+
+    const col1Laps = splitIntoLaps(columns[0]);
+    expect(col1Laps.length).toBe(6);
   });
 
 test('splits into columns with lap 1 sector 1 time present', () => {
