@@ -1,9 +1,9 @@
-import { parse, splitIntoColumns } from './pdfparser';
+import { parse, splitIntoColumns, splitIntoLaps } from './pdfparser';
 
 test('parser', async () => {
     const items = await parse('./sample_data/2022-02-12-Yas Marina/Porsche Sprint Challenge Middle East - Race 1 - Laps and Sectortimes.pdf');
     console.log(`read ${items.length} items`);
-    for (let index = 0; index < 20; index++) {
+    for (let index = 0; index < 40; index++) {
         const item = items[index];
         console.log(JSON.stringify(item));
     }
@@ -86,3 +86,16 @@ test('splits into columns with lap 1 sector 1 time missing', () => {
     expect(columns[1][0].text).toBe('27');
     expect(columns[1][26].text).toBe('53');
 })
+
+test('splits into laps', () => {
+    const driverItems = [...Array(9*3).keys()].map(i => ({
+            x: i % 9,
+            y: Math.floor(i / 9),
+            text: String(i),
+        }));
+
+    const laps = splitIntoLaps(driverItems);
+
+    expect(laps.length).toBe(3);
+});
+
