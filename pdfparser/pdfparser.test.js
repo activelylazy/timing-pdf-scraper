@@ -87,5 +87,17 @@ test('splits into laps', () => {
     const laps = splitIntoLaps(driverItems);
 
     expect(laps.length).toBe(3);
+
+    expect(laps[0]).toEqual({
+        lapNumber: '0',
+        s1: '1',
+        s1Speed: '2',
+        s2: '3',
+        s2Speed: '4',
+        s3: '5',
+        s3Speed: '6',
+        speedTrap: '7',
+        laptime: '8'
+    });
 });
 

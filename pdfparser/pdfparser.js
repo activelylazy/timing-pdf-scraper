@@ -19,13 +19,27 @@ function splitIntoColumns(driverItems) {
 
 function splitIntoLaps(driverItems) {
     const uniqueYValues = [...new Set(driverItems.map(item => item.y))];
+    uniqueYValues.sort();
+    const uniqueXValues = [...new Set(driverItems.map(item => item.x))];
+    uniqueXValues.sort();
     const yValueMap = {};
     uniqueYValues.forEach((value, index) => {
         yValueMap[value] = index;
     });
-    const lapItems = [...Array(uniqueYValues.length).keys()].map(i => []);
+    const xValueMap = {}
+    xValueMap[uniqueXValues[0]] = 'lapNumber';
+    xValueMap[uniqueXValues[1]] = 's1';
+    xValueMap[uniqueXValues[2]] = 's1Speed';
+    xValueMap[uniqueXValues[3]] = 's2';
+    xValueMap[uniqueXValues[4]] = 's2Speed';
+    xValueMap[uniqueXValues[5]] = 's3';
+    xValueMap[uniqueXValues[6]] = 's3Speed';
+    xValueMap[uniqueXValues[7]] = 'speedTrap';
+    xValueMap[uniqueXValues[8]] = 'laptime';
+
+    const lapItems = [...Array(uniqueYValues.length).keys()].map(i => ({}));
     driverItems.forEach(item => {
-        lapItems[yValueMap[item.y]].push(item);
+        lapItems[yValueMap[item.y]][xValueMap[item.x]] = item.text;
     });
     return lapItems;
 }
