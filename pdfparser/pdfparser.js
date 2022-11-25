@@ -13,6 +13,38 @@ function parse(filename) {
     });
 }
 
+function readDriverHeader(items, index) {
+    let driverName = items[index++].text.trim();
+    let driverNumber = Number(items[index++].text.trim());
+    let driverClass = items[index++].text.trim();
+
+    // todo check these
+    let c1lapText = items[index++].text;
+    let c1s1Header = items[index++].text;
+    let c1s2Header = items[index++].text;
+    let c1s3Header = items[index++].text;
+    let c1laptimeHeader = items[index++].text;
+    let c2lapText = items[index++].text;
+    let c2s1Header = items[index++].text;
+    let c2s2Header = items[index++].text;
+    let c2s3Header = items[index++].text;
+    let c2laptimeHeader = items[index++].text;
+    
+    return { driver: {
+        name: driverName,
+        number: driverNumber,
+        category: driverClass
+    }, index};
+}
+
+function readDriverItems(items, index) {
+    let driverItems = [];
+    while(items[index].R[0].S != -1) {
+        driverItems.push(items[index++]);
+    }
+    return {driverItems, index};
+}
+
 function convertDriverItemsIntoLaps(driverItems) {
     const columns = splitIntoColumns(driverItems);
     if (columns.length != 2) {
@@ -76,4 +108,4 @@ function makeLapFromItems(lapItems) {
     throw new Error(`Cannot make lap from ${lapItems.length} items`);
 }
 
-export { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps };
+export { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader, readDriverItems };

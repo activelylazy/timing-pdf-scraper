@@ -1,4 +1,5 @@
-import { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps } from './pdfparser';
+import fs from 'fs';
+import { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader, readDriverItems } from './pdfparser';
 
 test('integration test', async () => {
     const items = await parse('./sample_data/2022-02-12-Yas Marina/Porsche Sprint Challenge Middle East - Race 1 - Laps and Sectortimes.pdf');
@@ -166,4 +167,26 @@ test('make lap from 8 items', () => {
     });
 });
 
+test('reads driver header', () => {
+    const items = JSON.parse(fs.readFileSync('sample_data/2022-02-12-Yas Marina/driver_items.json'));
 
+    let { driver, index } = readDriverHeader(items, 0);
+
+    expect(index).toBe(13);
+    expect(driver).toEqual({
+        name: 'Daan van Kuijk',
+        number: 8,
+        category: 'Porsche GT3'
+    });
+});
+
+/*
+test('reads driver items', () => {
+    const items = JSON.parse(fs.readFileSync('sample_data/2022-02-12-Yas Marina/driver_items.json'));
+
+    let { driverItems, index } = readDriverItems(items, 0);
+
+    expect(index).toBe(0);
+    expect(items[index].text).toBe(' Andrey Mukovoz');
+});
+*/
