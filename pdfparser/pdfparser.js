@@ -13,6 +13,42 @@ function parse(filename) {
     });
 }
 
+function parseDriverLaps(filename) {
+    return parse(filename)
+        .then(items => {
+            const doc = {
+                raceTitle: items[0].text,
+                raceDate: items[1].text,
+                raceTitle2: items[2].text,
+                location: items[3].text,
+                doc: items[4].text,
+                drivers: [],
+            };
+
+            let index = 5;
+            while (index < items.length) {
+                let driver = {
+                    name: items[index++].text.trim(),
+                    number: Number(items[index++].text),
+                    category: items[index++].text.trim(),
+                };
+
+                // skip over the headers - todo check them
+                index += 10;
+
+                const [ driverItems, updatedIndex ] = readDriverItems(items, index);
+                index = updatedIndex;
+
+                console.log(`Driver ${driver.name} has ${driverItems.length} items`);
+                driver.laps = convertDriverItemsIntoLaps(driverItems);
+                doc.drivers.push(driver);
+                console.log(`Successfully added ${driver.name} with ${driver.laps.length} laps`);
+            }
+        
+            return doc;
+        });
+}
+
 function readDriverHeader(items, index) {
     let driverName = items[index++].text.trim();
     let driverNumber = Number(items[index++].text.trim());
@@ -144,7 +180,7 @@ function makeLapFromItems(lapItems) {
             'laptime': lapItems[7].text,
         }
     }
-    throw new Error(`Cannot make lap from ${lapItems.length} items`);
+    throw new Error(`Cannot make lap from ${lapItems.length} items: ${JSON.stringify(lapItems)}`);
 }
 
-export { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader, readDriverItems };
+export { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader, readDriverItems, parseDriverLaps };

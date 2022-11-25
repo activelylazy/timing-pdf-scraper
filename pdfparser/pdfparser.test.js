@@ -1,16 +1,18 @@
 import fs from 'fs';
-import { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader, readDriverItems } from './pdfparser';
+import { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader, readDriverItems, parseDriverLaps } from './pdfparser';
 
 test('integration test', async () => {
     const items = await parse('./sample_data/2022-02-12-Yas Marina/Porsche Sprint Challenge Middle East - Race 1 - Laps and Sectortimes.pdf');
-    for (let index = 0; index < 40; index++) {
-        const item = items[index];
-    }
     const raceTitle = items[0].text;
     const raceDate = items[1].text;
     const raceTitle2 = items[2].text;
     const location = items[3].text;
     const doc = items[4].text;
+
+    expect(raceTitle).toBe('Porsche Sprint Challenge Middle East');
+    expect(raceDate).toBe('12 - 13 February 2022')
+    expect(raceTitle2).toBe('Porsche Sprint Challenge Middle East');
+    expect(location).toBe('Yas Marina Circuit - 5281mtr.');
 
     let index = 5;
     let driverName = '';
@@ -35,11 +37,6 @@ test('integration test', async () => {
     while(items[index].R[0].S != -1) {
         driverItems.push(items[index++]);
     }
-
-    expect(raceTitle).toBe('Porsche Sprint Challenge Middle East');
-    expect(raceDate).toBe('12 - 13 February 2022')
-    expect(raceTitle2).toBe('Porsche Sprint Challenge Middle East');
-    expect(location).toBe('Yas Marina Circuit - 5281mtr.');
 
     const laps = convertDriverItemsIntoLaps(driverItems);
     expect(laps.length).toBe(12);
@@ -68,6 +65,43 @@ test('integration test', async () => {
         laptime: '1:56.697'
     });
   });
+
+test.skip('parsing porsche sprint challenge middle east', async () => {
+    const document = await parseDriverLaps('./sample_data/2022-02-12-Yas Marina/Porsche Sprint Challenge Middle East - Race 1 - Laps and Sectortimes.pdf');
+
+    expect(document.raceTitle).toBe('Porsche Sprint Challenge Middle East');
+    expect(document.raceDate).toBe('12 - 13 February 2022')
+    expect(document.raceTitle2).toBe('Porsche Sprint Challenge Middle East');
+    expect(document.location).toBe('Yas Marina Circuit - 5281mtr.');
+
+    expect(document.drivers[0].name).toBe('Morris Schuring');
+    expect(document.drivers[0].number).toBe(1);
+    expect(document.drivers[0].category).toBe('Porsche GT3');
+
+    expect(document.drivers[0].laps[0]).toEqual({
+        lapNumber: 1,
+        s1: undefined,
+        s1Speed: 217.7,
+        s2: 47.866,
+        s2Speed: 220,
+        s3: 43.868,
+        s3Speed: 165.1,
+        speedTrap: 238.9,
+        laptime: '2:00.140'
+    });
+    expect(document.drivers[0].laps[6]).toEqual({
+        lapNumber: 7,
+        s1: 24.969,
+        s1Speed: 221.3,
+        s2: 47.990,
+        s2Speed: 224.1,
+        s3: 43.738,
+        s3Speed: 164.6,
+        speedTrap: 231.8,
+        laptime: '1:56.697'
+    });
+
+});
 
 test('splits into columns with lap 1 sector 1 time present', () => {
     const driverItems = [...Array(9*6).keys()].map(i => ({text: String(i)}));
