@@ -241,3 +241,19 @@ test('reads driver items over a page', () => {
     expect(endIndex).toBe(129);
     expect(items[endIndex].text).toBe(' Lucas Groeneveld');
 })
+
+// not working yet
+test.skip('converts a second driver items into laps', () => {
+    const items = JSON.parse(fs.readFileSync('sample_data/2022-02-12-Yas Marina/driver_items_with_page_break.json'));
+
+    const [ driver, index ] = readDriverHeader(items, 0);
+    const [ driverItems, endIndex ] = readDriverItems(items, index);
+    driverItems.forEach((item, index) => {
+        if (item.text == '164.1') {
+            console.log(`Item is present here, index=${index}`);
+        }
+    });
+    const laps = convertDriverItemsIntoLaps(driverItems);
+    
+    expect(laps.length).toBe(12);
+});

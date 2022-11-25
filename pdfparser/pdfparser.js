@@ -180,7 +180,7 @@ function makeLapFromItems(lapItems) {
             'laptime': lapItems[7].text,
         }
     }
-    throw new Error(`Cannot make lap from ${lapItems.length} items: ${JSON.stringify(lapItems)}`);
+    throw new Error(`Cannot make lap from ${lapItems.length} items: ${JSON.stringify(lapItems, null, 2)}`);
 }
 
 export { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader, readDriverItems, parseDriverLaps };
