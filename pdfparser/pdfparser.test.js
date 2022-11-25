@@ -222,6 +222,16 @@ test('reads driver items', () => {
     expect(items[endIndex].text).toBe(' Andrey Mukovoz');
 });
 
+test('converts a driver items into laps', () => {
+    const items = JSON.parse(fs.readFileSync('sample_data/2022-02-12-Yas Marina/driver_items.json'));
+
+    const [ driver, index ] = readDriverHeader(items, 0);
+    const [ driverItems, endIndex ] = readDriverItems(items, index);
+    const laps = convertDriverItemsIntoLaps(driverItems);
+    
+    expect(laps.length).toBe(12);
+});
+
 test('reads driver items over a page', () => {
     const items = JSON.parse(fs.readFileSync('sample_data/2022-02-12-Yas Marina/driver_items_with_page_break.json'));
 
