@@ -37,10 +37,48 @@ function readDriverHeader(items, index) {
     }, index ];
 }
 
+function readPageHeader(items, index) {
+    const eventName = items[index++].text;
+    const eventDate = items[index++].text;
+    const eventName2 = items[index++].text;
+    const eventLocation = items[index++].text;
+    const documentName = items[index++].text;
+    return [ {
+        eventName,
+        eventDate,
+        eventName2,
+        eventLocation,
+        documentName,
+        },
+        index
+        ];
+}
+
 function readDriverItems(items, index) {
     let driverItems = [];
-    while(index < items.length && items[index].R[0].S != -1) {
-        driverItems.push(items[index++]);
+    let driverY = items[index].y;
+    while(index < items.length) {
+        let nextItem = items[index++];
+
+        if (nextItem.y < driverY) {
+            driverY = nextItem.y;
+            const result = readPageHeader(items, --index);
+            const pageHeader = result[0];
+            index = result[1];
+            nextItem = items[index++];
+        }
+
+        const nextItemCode = nextItem.R[0].S;
+        if (nextItemCode == -1) {
+            // next driver
+            index--;
+            break;
+        } else if (nextItemCode == 2) {
+            // skip
+        } else if (nextItemCode != 51 && nextItemCode != 52) {
+            throw new Error(`Unexpected driver item code in ${JSON.stringify(nextItem)}`);
+        }
+        driverItems.push(nextItem);
     }
     return [ driverItems, index ];
 }

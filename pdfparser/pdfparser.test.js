@@ -3,10 +3,8 @@ import { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriver
 
 test('integration test', async () => {
     const items = await parse('./sample_data/2022-02-12-Yas Marina/Porsche Sprint Challenge Middle East - Race 1 - Laps and Sectortimes.pdf');
-    console.log(`read ${items.length} items`);
     for (let index = 0; index < 40; index++) {
         const item = items[index];
-        console.log(JSON.stringify(item));
     }
     const raceTitle = items[0].text;
     const raceDate = items[1].text;
@@ -184,9 +182,18 @@ test('reads driver items', () => {
     const items = JSON.parse(fs.readFileSync('sample_data/2022-02-12-Yas Marina/driver_items.json'));
 
     const [ driver, index ] = readDriverHeader(items, 0);
-    console.log(`Item at ${index} of ${items.length}: ${JSON.stringify(items[index])}`);
     const [ driverItems, endIndex ] = readDriverItems(items, index);
 
     expect(endIndex).toBe(120);
     expect(items[endIndex].text).toBe(' Andrey Mukovoz');
 });
+
+test('reads driver items over a page', () => {
+    const items = JSON.parse(fs.readFileSync('sample_data/2022-02-12-Yas Marina/driver_items_with_page_break.json'));
+
+    const [ driver, index ] = readDriverHeader(items, 0);
+    const [ driverItems, endIndex ] = readDriverItems(items, index);
+
+    expect(endIndex).toBe(129);
+    expect(items[endIndex].text).toBe(' Lucas Groeneveld');
+})
