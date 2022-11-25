@@ -58,20 +58,20 @@ function readDriverItems(items, index) {
     let driverItems = [];
     let driverY = items[index].y;
     while(index < items.length) {
-        let nextItem = items[index++];
+        let nextItem = items[index];
 
         if (nextItem.y < driverY) {
+            // page break
             driverY = nextItem.y;
-            const result = readPageHeader(items, --index);
+            const result = readPageHeader(items, index);
             const pageHeader = result[0];
             index = result[1];
-            nextItem = items[index++];
+            nextItem = items[index];
         }
 
         const nextItemCode = nextItem.R[0].S;
         if (nextItemCode == -1) {
             // next driver
-            index--;
             break;
         } else if (nextItemCode == 2) {
             // skip
@@ -79,6 +79,7 @@ function readDriverItems(items, index) {
             throw new Error(`Unexpected driver item code in ${JSON.stringify(nextItem)}`);
         }
         driverItems.push(nextItem);
+        index++;
     }
     return [ driverItems, index ];
 }
