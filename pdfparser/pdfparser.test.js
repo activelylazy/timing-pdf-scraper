@@ -170,7 +170,7 @@ test('make lap from 8 items', () => {
 test('reads driver header', () => {
     const items = JSON.parse(fs.readFileSync('sample_data/2022-02-12-Yas Marina/driver_items.json'));
 
-    let { driver, index } = readDriverHeader(items, 0);
+    const [ driver, index ] = readDriverHeader(items, 0);
 
     expect(index).toBe(13);
     expect(driver).toEqual({
@@ -180,13 +180,13 @@ test('reads driver header', () => {
     });
 });
 
-/*
 test('reads driver items', () => {
     const items = JSON.parse(fs.readFileSync('sample_data/2022-02-12-Yas Marina/driver_items.json'));
 
-    let { driverItems, index } = readDriverItems(items, 0);
+    const [ driver, index ] = readDriverHeader(items, 0);
+    console.log(`Item at ${index} of ${items.length}: ${JSON.stringify(items[index])}`);
+    const [ driverItems, endIndex ] = readDriverItems(items, index);
 
-    expect(index).toBe(0);
-    expect(items[index].text).toBe(' Andrey Mukovoz');
+    expect(endIndex).toBe(120);
+    expect(items[endIndex].text).toBe(' Andrey Mukovoz');
 });
-*/

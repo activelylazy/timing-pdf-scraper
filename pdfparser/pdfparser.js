@@ -30,19 +30,19 @@ function readDriverHeader(items, index) {
     let c2s3Header = items[index++].text;
     let c2laptimeHeader = items[index++].text;
     
-    return { driver: {
+    return [ {
         name: driverName,
         number: driverNumber,
         category: driverClass
-    }, index};
+    }, index ];
 }
 
 function readDriverItems(items, index) {
     let driverItems = [];
-    while(items[index].R[0].S != -1) {
+    while(index < items.length && items[index].R[0].S != -1) {
         driverItems.push(items[index++]);
     }
-    return {driverItems, index};
+    return [ driverItems, index ];
 }
 
 function convertDriverItemsIntoLaps(driverItems) {
