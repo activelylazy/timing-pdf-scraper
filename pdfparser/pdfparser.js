@@ -35,7 +35,7 @@ function parseDriverLaps(filename) {
                 index = indexAfterDriverItems;
 
                 console.log(`Driver ${driver.name} has ${driverItems.length} items`);
-                driver.laps = convertDriverItemsIntoLaps(driverItems);
+                driver.laps = convertDriverItemsIntoLaps(driverItems, driver);
                 doc.drivers.push(driver);
                 console.log(`Successfully added ${driver.name} with ${driver.laps.length} laps`);
             }
@@ -124,6 +124,8 @@ function readDriverItems(items, index) {
             break;
         } else if (nextItemCode == 2) {
             // skip
+            index++;
+            continue;
         } else if (nextItemCode != 51 && nextItemCode != 52) {
             throw new Error(`Unexpected driver item code in ${JSON.stringify(nextItem)}`);
         }
@@ -154,7 +156,7 @@ function splitIntoColumns(driverItems, driver) {
     driverItems.forEach(item => {
         if (item.x >= driver.columnHeaders[1].lap.x - FUDGE_FACTOR) {
             col2.push(item);
-        } else if (item.x >= driver.columnHeaders[0].lap.x) {
+        } else if (item.x >= driver.columnHeaders[0].lap.x - FUDGE_FACTOR) {
             col1.push(item);
         } else {
             throw new Error(`Driver item left of first column at ${driver.columnHeaders[0].lap.x}: ${JSON.stringify(item)}`);
