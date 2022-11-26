@@ -27,17 +27,11 @@ function parseDriverLaps(filename) {
 
             let index = 5;
             while (index < items.length) {
-                let driver = {
-                    name: items[index++].text.trim(),
-                    number: Number(items[index++].text),
-                    category: items[index++].text.trim(),
-                };
+                const [ driver, indexAfterDriverHeader ] = readDriverHeader(items, index);
+                index = indexAfterDriverHeader;
 
-                // skip over the headers - todo check them
-                index += 10;
-
-                const [ driverItems, updatedIndex ] = readDriverItems(items, index);
-                index = updatedIndex;
+                const [ driverItems, indexAfterDriverItems ] = readDriverItems(items, index);
+                index = indexAfterDriverItems;
 
                 console.log(`Driver ${driver.name} has ${driverItems.length} items`);
                 driver.laps = convertDriverItemsIntoLaps(driverItems);
