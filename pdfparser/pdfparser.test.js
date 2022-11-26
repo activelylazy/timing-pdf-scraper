@@ -208,7 +208,15 @@ test('reads driver header', () => {
     expect(driver).toEqual({
         name: 'Daan van Kuijk',
         number: 8,
-        category: 'Porsche GT3'
+        category: 'Porsche GT3',
+        columnHeaders: [
+            {
+                lap: { x: 1.297 },
+            },
+            {
+                lap: { x: 18.641 },
+            },
+        ],
     });
 });
 
@@ -241,6 +249,9 @@ test('reads driver items over a page', () => {
     expect(endIndex).toBe(129);
     expect(items[endIndex].text).toBe(' Lucas Groeneveld');
 })
+
+// next test: take page break driver items and split into columns
+// column splitting does not work over a page break
 
 // not working yet
 test.skip('converts a second driver items into laps', () => {

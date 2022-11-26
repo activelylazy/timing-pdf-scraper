@@ -55,12 +55,18 @@ function readDriverHeader(items, index) {
     let driverClass = items[index++].text.trim();
 
     // todo check these
-    let c1lapText = items[index++].text;
+    let c1lap = items[index++];
+    if (c1lap.text !== 'lap') {
+        throw new Error(`Expected lap column header but got ${JSON.stringify(c1lap)}`);
+    }
     let c1s1Header = items[index++].text;
     let c1s2Header = items[index++].text;
     let c1s3Header = items[index++].text;
     let c1laptimeHeader = items[index++].text;
-    let c2lapText = items[index++].text;
+    let c2lap = items[index++];
+    if (c2lap.text !== 'lap') {
+        throw new Error(`Expected lap column header but got ${JSON.stringify(c2lap)}`);
+    }
     let c2s1Header = items[index++].text;
     let c2s2Header = items[index++].text;
     let c2s3Header = items[index++].text;
@@ -69,7 +75,19 @@ function readDriverHeader(items, index) {
     return [ {
         name: driverName,
         number: driverNumber,
-        category: driverClass
+        category: driverClass,
+        columnHeaders: [
+            {
+                lap: {
+                    x: c1lap.x,
+                },
+            },
+            {
+                lap: {
+                    x: c2lap.x,
+                },
+            }
+        ]
     }, index ];
 }
 
