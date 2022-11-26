@@ -1,71 +1,6 @@
 import fs from 'fs';
 import { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader, readDriverItems, parseDriverLaps } from './pdfparser';
 
-test('integration test', async () => {
-    const items = await parse('./sample_data/2022-02-12-Yas Marina/Porsche Sprint Challenge Middle East - Race 1 - Laps and Sectortimes.pdf');
-    const raceTitle = items[0].text;
-    const raceDate = items[1].text;
-    const raceTitle2 = items[2].text;
-    const location = items[3].text;
-    const doc = items[4].text;
-
-    expect(raceTitle).toBe('Porsche Sprint Challenge Middle East');
-    expect(raceDate).toBe('12 - 13 February 2022')
-    expect(raceTitle2).toBe('Porsche Sprint Challenge Middle East');
-    expect(location).toBe('Yas Marina Circuit - 5281mtr.');
-
-    let index = 5;
-    let driverName = '';
-    let driverItems = [];
-    let driverNumber = 0;
-    let driverClass = '';
-
-    driverName = items[index++].text;
-    driverNumber = items[index++].text;
-    driverClass = items[index++].text;
-    let c1lapText = items[index++].text;
-    let c1s1Header = items[index++].text;
-    let c1s2Header = items[index++].text;
-    let c1s3Header = items[index++].text;
-    let c1laptimeHeader = items[index++].text;
-    let c2lapText = items[index++].text;
-    let c2s1Header = items[index++].text;
-    let c2s2Header = items[index++].text;
-    let c2s3Header = items[index++].text;
-    let c2laptimeHeader = items[index++].text;
-
-    while(items[index].R[0].S != -1) {
-        driverItems.push(items[index++]);
-    }
-
-    const laps = convertDriverItemsIntoLaps(driverItems);
-    expect(laps.length).toBe(12);
-
-    expect(laps[0]).toEqual({
-        lapNumber: 1,
-        s1: undefined,
-        s1Speed: 217.7,
-        s2: 47.866,
-        s2Speed: 220,
-        s3: 43.868,
-        s3Speed: 165.1,
-        speedTrap: 238.9,
-        laptime: '2:00.140'
-    });
-
-    expect(laps[6]).toEqual({
-        lapNumber: 7,
-        s1: 24.969,
-        s1Speed: 221.3,
-        s2: 47.990,
-        s2Speed: 224.1,
-        s3: 43.738,
-        s3Speed: 164.6,
-        speedTrap: 231.8,
-        laptime: '1:56.697'
-    });
-  });
-
 test.skip('parsing porsche sprint challenge middle east', async () => {
     const document = await parseDriverLaps('./sample_data/2022-02-12-Yas Marina/Porsche Sprint Challenge Middle East - Race 1 - Laps and Sectortimes.pdf');
 
@@ -104,9 +39,22 @@ test.skip('parsing porsche sprint challenge middle east', async () => {
 });
 
 test('splits into columns with lap 1 sector 1 time present', () => {
-    const driverItems = [...Array(9*6).keys()].map(i => ({text: String(i)}));
+    const driverItems = [...Array(9*6).keys()].map(i => ({
+        text: String(i),
+        x: Math.floor(i/27)*10,
+    }));
+    const driver = {
+        columnHeaders: [
+            {
+                lap: { x: 0 },
+            },
+            {
+                lap: { x: 10 },
+            },
+        ]
+    };
 
-    const columns = splitIntoColumns(driverItems);
+    const columns = splitIntoColumns(driverItems, driver);
     
     expect(columns.length).toBe(2);
     expect(columns[0].length).toBe(9*3);
@@ -118,9 +66,22 @@ test('splits into columns with lap 1 sector 1 time present', () => {
 })
 
 test('splits into columns with lap 1 sector 1 time missing', () => {
-    const driverItems = [...Array(9*6).keys()].slice(1).map(i => ({text: String(i)}));
+    const driverItems = [...Array(9*6).keys()].slice(1).map(i => ({
+        text: String(i),
+        x: Math.floor(i/27)*10,
+    }));
+    const driver = {
+        columnHeaders: [
+            {
+                lap: { x: 0 },
+            },
+            {
+                lap: { x: 10 },
+            },
+        ]
+    };
 
-    const columns = splitIntoColumns(driverItems);
+    const columns = splitIntoColumns(driverItems, driver);
     
     expect(columns.length).toBe(2);
     expect(columns[0].length).toBe((9*3) - 1);
@@ -235,7 +196,7 @@ test('converts a driver items into laps', () => {
 
     const [ driver, index ] = readDriverHeader(items, 0);
     const [ driverItems, endIndex ] = readDriverItems(items, index);
-    const laps = convertDriverItemsIntoLaps(driverItems);
+    const laps = convertDriverItemsIntoLaps(driverItems, driver);
     
     expect(laps.length).toBe(12);
 });

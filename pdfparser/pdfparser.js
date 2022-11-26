@@ -1,3 +1,4 @@
+import e from 'express';
 import { PdfReader } from 'pdfreader';
 
 var numberOfColumns = 9;
@@ -132,8 +133,8 @@ function readDriverItems(items, index) {
     return [ driverItems, index ];
 }
 
-function convertDriverItemsIntoLaps(driverItems) {
-    const columns = splitIntoColumns(driverItems);
+function convertDriverItemsIntoLaps(driverItems, driver) {
+    const columns = splitIntoColumns(driverItems, driver);
     if (columns.length != 2) {
         throw new Error(`Expected 2 columns of laps but got ${columns.length}`);
     }
@@ -146,8 +147,20 @@ function convertDriverItemsIntoLaps(driverItems) {
     return col1Laps.concat(col2Laps);
 }
 
-function splitIntoColumns(driverItems) {
-    return [driverItems.slice(0, driverItems.length / 2), driverItems.slice(driverItems.length / 2)];
+function splitIntoColumns(driverItems, driver) {
+    const FUDGE_FACTOR = 1;
+    const col1 = [];
+    const col2 = [];
+    driverItems.forEach(item => {
+        if (item.x >= driver.columnHeaders[1].lap.x - FUDGE_FACTOR) {
+            col2.push(item);
+        } else if (item.x >= driver.columnHeaders[0].lap.x) {
+            col1.push(item);
+        } else {
+            throw new Error(`Driver item left of first column at ${driver.columnHeaders[0].lap.x}: ${JSON.stringify(item)}`);
+        }
+    });
+    return [col1, col2];
 }
 
 function splitIntoLaps(driverItems) {
