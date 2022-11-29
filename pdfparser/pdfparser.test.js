@@ -230,11 +230,6 @@ test('converts a second driver items into laps', () => {
 
     const [ driver, index ] = readDriverHeader(items, 0);
     const [ driverItems, endIndex ] = readDriverItems(items, index);
-    driverItems.forEach((item, index) => {
-        if (item.text == '164.1') {
-            console.log(`Item is present here, index=${index}`);
-        }
-    });
     const laps = convertDriverItemsIntoLaps(driverItems, driver);
     
     expect(laps.length).toBe(12);

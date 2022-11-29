@@ -33,7 +33,6 @@ function parseDriverLaps(filename) {
                 const [ driverItems, indexAfterDriverItems ] = readDriverItems(items, index);
                 index = indexAfterDriverItems;
 
-                console.log(`Driver ${driver.name} has ${driverItems.length} items`);
                 driver.laps = convertDriverItemsIntoLaps(driverItems, driver);
                 doc.drivers.push(driver);
                 console.log(`Successfully added ${driver.name} with ${driver.laps.length} laps`);
