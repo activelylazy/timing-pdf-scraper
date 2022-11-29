@@ -1,8 +1,7 @@
 import fs from 'fs';
 import { parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader, readDriverItems, parseDriverLaps } from './pdfparser';
 
-// still trying to get this to pass
-test.skip('parsing porsche sprint challenge middle east', async () => {
+test('parsing porsche sprint challenge middle east', async () => {
     const document = await parseDriverLaps('./sample_data/2022-02-12-Yas Marina/Porsche Sprint Challenge Middle East - Race 1 - Laps and Sectortimes.pdf');
 
     expect(document.raceTitle).toBe('Porsche Sprint Challenge Middle East');
