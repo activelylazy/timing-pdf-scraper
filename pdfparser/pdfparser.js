@@ -1,4 +1,3 @@
-import e from 'express';
 import { PdfReader } from 'pdfreader';
 
 var numberOfColumns = 9;
