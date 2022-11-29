@@ -206,6 +206,10 @@ function makeLapFromItems(lapItems) {
             'speedTrap': Number(lapItems[6].text),
             'laptime': lapItems[7].text,
         }
+    } else if (lapItems.length == 1) {
+        return {
+            'lapNumber': Number(lapItems[0].text),
+        }
     }
     throw new Error(`Cannot make lap from ${lapItems.length} items: ${JSON.stringify(lapItems, null, 2)}`);
 }
