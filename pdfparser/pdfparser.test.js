@@ -1,7 +1,7 @@
 import fs from 'fs';
 import {
   splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader,
-  readDriverItems, parseDriverLaps,
+  readDriverItems, parseDriverLaps, convertLaptimeToSeconds
 } from './pdfparser';
 
 test('parsing porsche sprint challenge middle east', async () => {
@@ -224,9 +224,6 @@ test('converts driver with empty lap into laps', () => {
   expect(laps.length).toBe(12);
 });
 
-// next test: take page break driver items and split into columns
-// column splitting does not work over a page break
-
 test('converts a second driver items into laps', () => {
   const items = JSON.parse(fs.readFileSync('sample_data/2022-02-12-Yas Marina/driver_items_with_page_break.json'));
 
@@ -235,4 +232,10 @@ test('converts a second driver items into laps', () => {
   const laps = convertDriverItemsIntoLaps(driverItems, driver);
 
   expect(laps.length).toBe(12);
+});
+
+test('converts laptime to seconds', () => {
+  const seconds = convertLaptimeToSeconds('1:59.787');
+
+  expect(seconds).toBe(119.787);
 });

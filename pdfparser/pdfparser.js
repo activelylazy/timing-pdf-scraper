@@ -119,6 +119,11 @@ function splitIntoColumns(driverItems, driver) {
   return [col1, col2];
 }
 
+function convertLaptimeToSeconds(laptime) {
+  const minutesAndSeconds = laptime.split(':');
+  return (Number(minutesAndSeconds[0]) * 60) + Number(minutesAndSeconds[1]);
+}
+
 function makeLapFromItems(lapItems) {
   lapItems.sort((a, b) => a.x - b.x);
   if (lapItems.length === 9) {
@@ -213,5 +218,5 @@ function parseDriverLaps(filename) {
 
 export {
   parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps,
-  readDriverHeader, readDriverItems, parseDriverLaps,
+  readDriverHeader, readDriverItems, parseDriverLaps, convertLaptimeToSeconds,
 };
