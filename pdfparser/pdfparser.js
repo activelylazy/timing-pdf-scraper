@@ -136,7 +136,7 @@ function makeLapFromItems(lapItems) {
       s3: Number(lapItems[5].text),
       s3Speed: Number(lapItems[6].text),
       speedTrap: Number(lapItems[7].text),
-      laptime: lapItems[8].text,
+      laptime: convertLaptimeToSeconds(lapItems[8].text),
     };
   } if (lapItems.length === 8) {
     return {
@@ -147,7 +147,7 @@ function makeLapFromItems(lapItems) {
       s3: Number(lapItems[4].text),
       s3Speed: Number(lapItems[5].text),
       speedTrap: Number(lapItems[6].text),
-      laptime: lapItems[7].text,
+      laptime: convertLaptimeToSeconds(lapItems[7].text),
     };
   } if (lapItems.length === 1) {
     return {

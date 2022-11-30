@@ -1,7 +1,7 @@
 import fs from 'fs';
 import {
   splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader,
-  readDriverItems, parseDriverLaps, convertLaptimeToSeconds
+  readDriverItems, parseDriverLaps, convertLaptimeToSeconds,
 } from './pdfparser';
 
 test('parsing porsche sprint challenge middle east', async () => {
@@ -25,7 +25,7 @@ test('parsing porsche sprint challenge middle east', async () => {
     s3: 43.868,
     s3Speed: 165.1,
     speedTrap: 238.9,
-    laptime: '2:00.140',
+    laptime: 120.140,
   });
   expect(document.drivers[0].laps[6]).toEqual({
     lapNumber: 7,
@@ -36,7 +36,7 @@ test('parsing porsche sprint challenge middle east', async () => {
     s3: 43.738,
     s3Speed: 164.6,
     speedTrap: 231.8,
-    laptime: '1:56.697',
+    laptime: 116.697,
   });
 });
 
@@ -95,10 +95,11 @@ test('splits into columns with lap 1 sector 1 time missing', () => {
 });
 
 test('splits into laps', () => {
+  const labels = ['0', '1', '2', '3', '4', '5', '6', '7', '0:08.00'];
   const driverItems = [...Array(9 * 3).keys()].map((i) => ({
     x: i % 9,
     y: Math.floor(i / 9),
-    text: String(i),
+    text: labels[i % 9],
   }));
 
   const laps = splitIntoLaps(driverItems);
@@ -114,15 +115,16 @@ test('splits into laps', () => {
     s3: 5,
     s3Speed: 6,
     speedTrap: 7,
-    laptime: '8',
+    laptime: 8,
   });
 });
 
 test('make lap from 9 items', () => {
+  const labels = ['0', '1', '2', '3', '4', '5', '6', '7', '0:08.00'];
   const lapItems = [...Array(9).keys()].map((i) => ({
     x: i,
     y: 10,
-    text: String(i),
+    text: labels[i],
   }));
 
   const lap = makeLapFromItems(lapItems);
@@ -136,15 +138,16 @@ test('make lap from 9 items', () => {
     s3: 5,
     s3Speed: 6,
     speedTrap: 7,
-    laptime: '8',
+    laptime: 8,
   });
 });
 
 test('make lap from 8 items', () => {
+  const labels = ['0', '1', '2', '3', '4', '5', '6', '0:07.00'];
   const lapItems = [...Array(8).keys()].map((i) => ({
     x: i,
     y: 10,
-    text: String(i),
+    text: labels[i],
   }));
 
   const lap = makeLapFromItems(lapItems);
@@ -158,7 +161,7 @@ test('make lap from 8 items', () => {
     s3: 4,
     s3Speed: 5,
     speedTrap: 6,
-    laptime: '7',
+    laptime: 7,
   });
 });
 
