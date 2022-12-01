@@ -245,18 +245,32 @@ function cumulativeTime(laps) {
   return laps.map((lap) => {
     const newLap = { ...lap };
     time += lap.s1;
-    newLap.s1 = time;
+    newLap.s1 = Number(time.toFixed(3));
     time += lap.s2;
-    newLap.s2 = time;
+    newLap.s2 = Number(time.toFixed(3));
     time += lap.s3;
-    newLap.s3 = time;
-    newLap.lapTime = time;
+    newLap.s3 = Number(time.toFixed(3));
+    newLap.laptime = newLap.s3;
     return newLap;
   });
+}
+
+function parseRaceLaps(filename) {
+  return parseDriverLaps(filename)
+    .then((doc) => {
+      validateRace(doc);
+      return {
+        ...doc,
+        drivers: doc.drivers.map((driver) => ({
+          ...driver,
+          cumLaps: cumulativeTime(driver.laps),
+        })),
+      };
+    });
 }
 
 export {
   parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps,
   readDriverHeader, readDriverItems, parseDriverLaps, convertLaptimeToSeconds,
-  validateRace, cumulativeTime,
+  validateRace, cumulativeTime, parseRaceLaps,
 };

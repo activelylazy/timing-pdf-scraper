@@ -1,12 +1,12 @@
 import fs from 'fs';
 import {
   splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader,
-  readDriverItems, parseDriverLaps, convertLaptimeToSeconds, validateRace, cumulativeTime,
+  readDriverItems, convertLaptimeToSeconds, cumulativeTime,
+  parseRaceLaps,
 } from './pdfparser';
 
 test('parsing porsche sprint challenge middle east', async () => {
-  const document = await parseDriverLaps('./sample_data/2022-02-12-Yas Marina/Porsche Sprint Challenge Middle East - Race 1 - Laps and Sectortimes.pdf');
-  validateRace(document);
+  const document = await parseRaceLaps('./sample_data/2022-02-12-Yas Marina/Porsche Sprint Challenge Middle East - Race 1 - Laps and Sectortimes.pdf');
 
   expect(document.raceTitle).toBe('Porsche Sprint Challenge Middle East');
   expect(document.raceDate).toBe('12 - 13 February 2022');
@@ -38,6 +38,17 @@ test('parsing porsche sprint challenge middle east', async () => {
     s3Speed: 164.6,
     speedTrap: 231.8,
     laptime: 116.697,
+  });
+  expect(document.drivers[0].cumLaps[0]).toEqual({
+    lapNumber: 1,
+    s1: 28.406,
+    s1Speed: 217.7,
+    s2: 76.272,
+    s2Speed: 220,
+    s3: 120.14,
+    s3Speed: 165.1,
+    speedTrap: 238.9,
+    laptime: 120.14,
   });
 });
 
@@ -259,14 +270,14 @@ test('calculates cumulative time', () => {
       s1: 10.000,
       s2: 20.000,
       s3: 30.000,
-      lapTime: 60.000,
+      laptime: 60.000,
     },
     {
       lapNumber: 2,
       s1: 11.000,
       s2: 21.000,
       s3: 31.000,
-      lapTime: 63.000,
+      laptime: 63.000,
     },
   ];
   const cumLaps = cumulativeTime(laps);
@@ -276,14 +287,14 @@ test('calculates cumulative time', () => {
       s1: 10.000,
       s2: 30.000,
       s3: 60.000,
-      lapTime: 60.000,
+      laptime: 60.000,
     },
     {
       lapNumber: 2,
       s1: 71.000,
       s2: 92.000,
       s3: 123.000,
-      lapTime: 123.000,
+      laptime: 123.000,
     },
   ]);
 });
