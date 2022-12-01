@@ -192,33 +192,29 @@ function convertDriverItemsIntoLaps(driverItems, driver) {
   return col1Laps.concat(col2Laps);
 }
 
-function parseDriverLaps(filename) {
-  return parse(filename)
-    .then((items) => {
-      const doc = {
-        raceTitle: items[0].text,
-        raceDate: items[1].text,
-        raceTitle2: items[2].text,
-        location: items[3].text,
-        doc: items[4].text,
-        drivers: [],
-      };
+async function parseDriverLaps(filename) {
+  const items = await parse(filename);
+  const doc = {
+    raceTitle: items[0].text,
+    raceDate: items[1].text,
+    raceTitle2: items[2].text,
+    location: items[3].text,
+    doc: items[4].text,
+    drivers: [],
+  };
+  let index = 5;
+  while (index < items.length) {
+    const [driver, indexAfterDriverHeader] = readDriverHeader(items, index);
+    index = indexAfterDriverHeader;
 
-      let index = 5;
-      while (index < items.length) {
-        const [driver, indexAfterDriverHeader] = readDriverHeader(items, index);
-        index = indexAfterDriverHeader;
+    const [driverItems, indexAfterDriverItems] = readDriverItems(items, index);
+    index = indexAfterDriverItems;
 
-        const [driverItems, indexAfterDriverItems] = readDriverItems(items, index);
-        index = indexAfterDriverItems;
-
-        driver.laps = convertDriverItemsIntoLaps(driverItems, driver);
-        doc.drivers.push(driver);
-        console.log(`Successfully added ${driver.name} with ${driver.laps.length} laps`);
-      }
-
-      return doc;
-    });
+    driver.laps = convertDriverItemsIntoLaps(driverItems, driver);
+    doc.drivers.push(driver);
+    console.log(`Successfully added ${driver.name} with ${driver.laps.length} laps`);
+  }
+  return doc;
 }
 
 function validateRace(doc) {
@@ -255,18 +251,16 @@ function cumulativeTime(laps) {
   });
 }
 
-function parseRaceLaps(filename) {
-  return parseDriverLaps(filename)
-    .then((doc) => {
-      validateRace(doc);
-      return {
-        ...doc,
-        drivers: doc.drivers.map((driver) => ({
-          ...driver,
-          cumLaps: cumulativeTime(driver.laps),
-        })),
-      };
-    });
+async function parseRaceLaps(filename) {
+  const doc = await parseDriverLaps(filename);
+  validateRace(doc);
+  return {
+    ...doc,
+    drivers: doc.drivers.map((driver) => ({
+      ...driver,
+      cumLaps: cumulativeTime(driver.laps),
+    })),
+  };
 }
 
 export {
