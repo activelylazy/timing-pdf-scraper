@@ -18,7 +18,7 @@ test('parsing porsche sprint challenge middle east', async () => {
 
   expect(document.drivers[0].laps[0]).toEqual({
     lapNumber: 1,
-    s1: undefined,
+    s1: 28.406,
     s1Speed: 217.7,
     s2: 47.866,
     s2Speed: 220,
@@ -143,7 +143,7 @@ test('make lap from 9 items', () => {
 });
 
 test('make lap from 8 items', () => {
-  const labels = ['0', '1', '2', '3', '4', '5', '6', '0:07.00'];
+  const labels = ['0', '1', '22.222', '3', '44.444', '5', '6', '1:17.777'];
   const lapItems = [...Array(8).keys()].map((i) => ({
     x: i,
     y: 10,
@@ -154,14 +154,14 @@ test('make lap from 8 items', () => {
 
   expect(lap).toEqual({
     lapNumber: 0,
-    s1: undefined,
+    s1: 11.111,
     s1Speed: 1,
-    s2: 2,
+    s2: 22.222,
     s2Speed: 3,
-    s3: 4,
+    s3: 44.444,
     s3Speed: 5,
     speedTrap: 6,
-    laptime: 7,
+    laptime: 77.777,
   });
 });
 

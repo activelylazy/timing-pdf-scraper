@@ -139,7 +139,7 @@ function makeLapFromItems(lapItems) {
       laptime: convertLaptimeToSeconds(lapItems[8].text),
     };
   } if (lapItems.length === 8) {
-    return {
+    const lap = {
       lapNumber: Number(lapItems[0].text),
       s1Speed: Number(lapItems[1].text),
       s2: Number(lapItems[2].text),
@@ -149,6 +149,8 @@ function makeLapFromItems(lapItems) {
       speedTrap: Number(lapItems[6].text),
       laptime: convertLaptimeToSeconds(lapItems[7].text),
     };
+    lap.s1 = Number((lap.laptime - lap.s3 - lap.s2).toFixed(3));
+    return lap;
   } if (lapItems.length === 1) {
     return {
       lapNumber: Number(lapItems[0].text),
