@@ -244,3 +244,9 @@ test('converts laptime to seconds', () => {
 
   expect(seconds).toBe(119.787);
 });
+
+test('converts laptime to seconds with rounding', () => {
+  const seconds = convertLaptimeToSeconds('1:55.546');  // this value isn't a precise float
+
+  expect(seconds).toBe(115.546);
+});

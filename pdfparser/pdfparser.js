@@ -121,7 +121,7 @@ function splitIntoColumns(driverItems, driver) {
 
 function convertLaptimeToSeconds(laptime) {
   const minutesAndSeconds = laptime.split(':');
-  return (Number(minutesAndSeconds[0]) * 60) + Number(minutesAndSeconds[1]);
+  return Number(((Number(minutesAndSeconds[0]) * 60) + Number(minutesAndSeconds[1])).toFixed(3));
 }
 
 function makeLapFromItems(lapItems) {
