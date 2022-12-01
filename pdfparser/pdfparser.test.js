@@ -1,11 +1,12 @@
 import fs from 'fs';
 import {
   splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader,
-  readDriverItems, parseDriverLaps, convertLaptimeToSeconds,
+  readDriverItems, parseDriverLaps, convertLaptimeToSeconds, validateRace,
 } from './pdfparser';
 
 test('parsing porsche sprint challenge middle east', async () => {
   const document = await parseDriverLaps('./sample_data/2022-02-12-Yas Marina/Porsche Sprint Challenge Middle East - Race 1 - Laps and Sectortimes.pdf');
+  validateRace(document);
 
   expect(document.raceTitle).toBe('Porsche Sprint Challenge Middle East');
   expect(document.raceDate).toBe('12 - 13 February 2022');
@@ -235,6 +236,7 @@ test('converts a second driver items into laps', () => {
   const laps = convertDriverItemsIntoLaps(driverItems, driver);
 
   expect(laps.length).toBe(12);
+  expect(laps[0].lapNumber).toBe(1);
 });
 
 test('converts laptime to seconds', () => {

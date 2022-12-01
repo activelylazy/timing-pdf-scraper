@@ -160,6 +160,7 @@ function makeLapFromItems(lapItems) {
 }
 
 function splitIntoLaps(driverItems) {
+  // y values here disregard page number, could cause an issue with very long sessions where y-values collide
   const uniqueYValues = [...new Set(driverItems.map((item) => item.y))];
   uniqueYValues.sort((a, b) => a - b);
   const yValueMap = {};
@@ -172,7 +173,8 @@ function splitIntoLaps(driverItems) {
     lapItems[yValueMap[item.y]].push(item);
   });
 
-  return lapItems.map((lap) => makeLapFromItems(lap));
+  const laps = lapItems.map((lap) => makeLapFromItems(lap));
+  return laps.sort((lap1, lap2) => lap1.lapNumber - lap2.lapNumber);
 }
 
 function convertDriverItemsIntoLaps(driverItems, driver) {
@@ -218,7 +220,27 @@ function parseDriverLaps(filename) {
     });
 }
 
+function validateRace(doc) {
+  doc.drivers.forEach(driver => {
+    if (driver.name === undefined || driver.name === '') {
+      throw new Error('Missing driver name');
+    }
+    if (driver.number === undefined) {
+      throw new Error('Missing driver number');
+    }
+    if (driver.category === undefined || driver.category === '') {
+      throw new Error('Missing driver category');
+    }
+    driver.laps.forEach((lap, index) => {
+      if (lap.lapNumber !== index+1) {
+        throw new Error(`Incorrect lap for driver ${driver.name} at index ${index}: ${JSON.stringify(lap)}`);
+      }
+    });
+  });
+}
+
 export {
   parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps,
   readDriverHeader, readDriverItems, parseDriverLaps, convertLaptimeToSeconds,
+  validateRace,
 };
