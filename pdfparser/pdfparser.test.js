@@ -1,7 +1,7 @@
 import fs from 'fs';
 import {
   splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader,
-  readDriverItems, parseDriverLaps, convertLaptimeToSeconds, validateRace,
+  readDriverItems, parseDriverLaps, convertLaptimeToSeconds, validateRace, cumulativeTime,
 } from './pdfparser';
 
 test('parsing porsche sprint challenge middle east', async () => {
@@ -246,7 +246,44 @@ test('converts laptime to seconds', () => {
 });
 
 test('converts laptime to seconds with rounding', () => {
-  const seconds = convertLaptimeToSeconds('1:55.546');  // this value isn't a precise float
+  // this value isn't a precise float
+  const seconds = convertLaptimeToSeconds('1:55.546');
 
   expect(seconds).toBe(115.546);
+});
+
+test('calculates cumulative time', () => {
+  const laps = [
+    {
+      lapNumber: 1,
+      s1: 10.000,
+      s2: 20.000,
+      s3: 30.000,
+      lapTime: 60.000,
+    },
+    {
+      lapNumber: 2,
+      s1: 11.000,
+      s2: 21.000,
+      s3: 31.000,
+      lapTime: 63.000,
+    },
+  ];
+  const cumLaps = cumulativeTime(laps);
+  expect(cumLaps).toEqual([
+    {
+      lapNumber: 1,
+      s1: 10.000,
+      s2: 30.000,
+      s3: 60.000,
+      lapTime: 60.000,
+    },
+    {
+      lapNumber: 2,
+      s1: 71.000,
+      s2: 92.000,
+      s3: 123.000,
+      lapTime: 123.000,
+    },
+  ]);
 });
