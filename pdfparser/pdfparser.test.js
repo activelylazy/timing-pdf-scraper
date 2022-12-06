@@ -1,8 +1,7 @@
 import fs from 'fs';
 import {
   splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps, readDriverHeader,
-  readDriverItems, convertLaptimeToSeconds, cumulativeTime,
-  parseRaceLaps,
+  readDriverItems, convertLaptimeToSeconds, cumulativeTime, parseRaceLaps, getGapsToLeader,
 } from './pdfparser';
 
 test('parsing porsche sprint challenge middle east', async () => {
@@ -50,6 +49,28 @@ test('parsing porsche sprint challenge middle east', async () => {
     speedTrap: 238.9,
     laptime: 120.14,
   });
+});
+
+test.only('gaps to leader', async () => {
+  const document = await parseRaceLaps('./sample_data/2022-02-12-Yas Marina/Porsche Sprint Challenge Middle East - Race 1 - Laps and Sectortimes.pdf');
+
+  const gapsToLeader = getGapsToLeader(document);
+  console.log(JSON.stringify(gapsToLeader, null, 2));
+
+  expect(gapsToLeader.length).toBe(17);
+  expect(gapsToLeader[0].driver).toEqual('Bandar Alesayi');
+  expect(gapsToLeader[0].gap).toEqual(0);
+  
+  expect(gapsToLeader[1].driver).toEqual('Morris Schuring');
+  expect(gapsToLeader[1].gap).toEqual(0.517);
+
+  expect(gapsToLeader[9].driver).toEqual('Alexander Malykhin');
+  expect(gapsToLeader[9].gap).toEqual(18.574);
+
+  expect(gapsToLeader[13].driver).toEqual('Saud Al Saud');
+  expect(gapsToLeader[13].gap).toEqual(103.317);
+
+  // Maciej Walenda is incorrectly appearing in 14th place, with null gap
 });
 
 test('splits into columns with lap 1 sector 1 time present', () => {

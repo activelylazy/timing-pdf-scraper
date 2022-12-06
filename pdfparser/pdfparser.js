@@ -263,8 +263,35 @@ async function parseRaceLaps(filename) {
   };
 }
 
+function getGapsToLeader(raceDoc) {
+  const numLaps = Math.max(...raceDoc.drivers.map(driver => driver.cumLaps.length));
+
+  const minRaceTime = Math.min(...raceDoc.drivers.map(driver => {
+    if (driver.cumLaps.length === numLaps) {
+      return driver.cumLaps[numLaps - 1].laptime || Infinity;
+    } else {
+      return 10000;
+    }
+  }));
+  const gaps = raceDoc.drivers.map(driver => {
+    if (driver.laps.length === numLaps) {
+      return ({
+        driver: driver.name,
+        gap: Number((driver.cumLaps[numLaps - 1].laptime - minRaceTime).toFixed(3)),
+        totalTime: driver.cumLaps[numLaps - 1].laptime,
+      });
+    } else {
+      return ({
+        driver: driver.name,
+        lapsBehind: numLaps - driver.cumLaps.length,
+      });
+    }
+  });
+  return gaps.sort((g1, g2) => g1.gap - g2.gap);
+}
+
 export {
   parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps,
   readDriverHeader, readDriverItems, parseDriverLaps, convertLaptimeToSeconds,
-  validateRace, cumulativeTime, parseRaceLaps,
+  validateRace, cumulativeTime, parseRaceLaps, getGapsToLeader,
 };
