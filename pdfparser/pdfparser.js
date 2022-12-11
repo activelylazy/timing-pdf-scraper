@@ -300,9 +300,11 @@ function getGapsToLeader(raceDoc) {
   return gaps.sort((g1, g2) => {
     if (g1.lapsBehind === g2.lapsBehind) {
       return g1.gap - g2.gap;
-    } else if (g1.lapsBehind !== undefined && g2.lapsBehind !== undefined) {
+    }
+    if (g1.lapsBehind !== undefined && g2.lapsBehind !== undefined) {
       return g1.lapsBehind - g2.lapsBehind;
-    } else if (g1.lapsBehind !== undefined) {
+    }
+    if (g1.lapsBehind !== undefined) {
       return 1;
     }
     return -1;

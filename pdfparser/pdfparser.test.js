@@ -59,7 +59,7 @@ test('gaps to leader', async () => {
   expect(gapsToLeader.length).toBe(17);
   expect(gapsToLeader[0].driver).toEqual('Bandar Alesayi');
   expect(gapsToLeader[0].gap).toEqual(0);
-  
+
   expect(gapsToLeader[1].driver).toEqual('Morris Schuring');
   expect(gapsToLeader[1].gap).toEqual(0.517);
 
