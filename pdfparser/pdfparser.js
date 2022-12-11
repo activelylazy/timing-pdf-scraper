@@ -175,7 +175,13 @@ function splitIntoLaps(driverItems) {
   });
 
   const laps = lapItems.map((lap) => makeLapFromItems(lap));
-  return laps.sort((lap1, lap2) => lap1.lapNumber - lap2.lapNumber);
+  return laps;
+}
+
+function lapIsEmpty(lap) {
+  return lap.s1 === undefined && lap.s2 === undefined && lap.s3 === undefined
+      && lap.s1Speed === undefined && lap.s2Speed === undefined && lap.s3Speed === undefined
+      && lap.speedTrap === undefined && lap.laptime === undefined;
 }
 
 function convertDriverItemsIntoLaps(driverItems, driver) {
@@ -189,7 +195,13 @@ function convertDriverItemsIntoLaps(driverItems, driver) {
     throw new Error(`Columns have different number of laps ${col1Laps.length} and ${col2Laps.length}`);
   }
 
-  return col1Laps.concat(col2Laps);
+  const laps = col1Laps.concat(col2Laps);
+  let sortedLaps = laps.sort((lap1, lap2) => lap1.lapNumber - lap2.lapNumber);
+
+  while (sortedLaps.length > 0 && lapIsEmpty(sortedLaps[sortedLaps.length - 1])) {
+    sortedLaps = sortedLaps.slice(0, sortedLaps.length - 1);
+  }
+  return sortedLaps;
 }
 
 async function parseDriverLaps(filename) {
@@ -263,8 +275,42 @@ async function parseRaceLaps(filename) {
   };
 }
 
+function getGapsToLeader(raceDoc) {
+  const numLaps = Math.max(...raceDoc.drivers.map((driver) => driver.cumLaps.length));
+
+  const minRaceTime = Math.min(...raceDoc.drivers.map((driver) => {
+    if (driver.cumLaps.length === numLaps) {
+      return driver.cumLaps[numLaps - 1].laptime || Infinity;
+    }
+    return 10000;
+  }));
+  const gaps = raceDoc.drivers.map((driver) => {
+    if (driver.laps.length === numLaps) {
+      return ({
+        driver: driver.name,
+        gap: Number((driver.cumLaps[numLaps - 1].laptime - minRaceTime).toFixed(3)),
+        totalTime: driver.cumLaps[numLaps - 1].laptime,
+      });
+    }
+    return ({
+      driver: driver.name,
+      lapsBehind: numLaps - driver.cumLaps.length,
+    });
+  });
+  return gaps.sort((g1, g2) => {
+    if (g1.lapsBehind === g2.lapsBehind) {
+      return g1.gap - g2.gap;
+    } else if (g1.lapsBehind !== undefined && g2.lapsBehind !== undefined) {
+      return g1.lapsBehind - g2.lapsBehind;
+    } else if (g1.lapsBehind !== undefined) {
+      return 1;
+    }
+    return -1;
+  });
+}
+
 export {
   parse, splitIntoColumns, splitIntoLaps, makeLapFromItems, convertDriverItemsIntoLaps,
   readDriverHeader, readDriverItems, parseDriverLaps, convertLaptimeToSeconds,
-  validateRace, cumulativeTime, parseRaceLaps,
+  validateRace, cumulativeTime, parseRaceLaps, getGapsToLeader,
 };
